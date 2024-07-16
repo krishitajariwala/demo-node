@@ -1,0 +1,112 @@
+// create server and fetching API with node
+
+
+// const http = require('http');
+// const fs = require('fs');
+
+// const index=fs.readFileSync('index.html','UTF-8'); //static file access in node
+// const data = fs.readFileSync('data.json','UTF-8');
+
+// const server = http.createServer((req,res)=>{
+//  console.log(req.url);
+
+//         switch(req.url){
+//                 case '/':
+//                         res.setHeader('Content-Type','txt/html');
+//                         res.end(index);
+//                         break;
+//                 case '/api':
+//                         res.setHeader('Content-Type','application/json');
+//                         res.end(data);
+//                         break;
+
+//                 case '/product':
+//                         res.setHeader('Content-Type','txt/html');
+//                         res.end(index);
+//                         break;
+
+//                 default:
+//                         res.writeHead(404,'nt found');
+//                         res.end();
+//                         break;
+
+//      }
+
+//         console.log('server started')
+//         // res.end('<h1>hello</h1>');
+
+// });
+
+// server.listen(8080)
+// create server and fetching API with node
+
+
+// CREATE SERVER AND FETCHING API WITH EXTRESS
+
+
+const fs = require('fs');
+ const index=fs.readFileSync('index.html','UTF-8'); //static file access in node
+ const data =JSON.parse(fs.readFileSync('data.json','UTF-8'));
+ const product = data.product;
+
+
+const express = require('express');
+const server = express();
+server.use(express.json) //body-Parser
+
+server.use(express.static('public'));
+
+server.use((req,res,next)=>{
+        console.log(req.method,req.ip,req.hostname,new Date());
+        next();
+
+})//application level middleware
+
+const auth = (req,res,next)=>{
+        // console.log(req.query)
+        console.log(req.body)
+        if(req.query.password=='123')
+        {
+                next()
+        }
+        else{
+                res.sendStatus(401);
+        }
+        next();
+ 
+}
+
+// server.use(auth);
+
+//API - Endpoint - Route
+server.get('/product/:id',auth,(req,res)=>{
+        console.log(req.params)
+        res.json({type:'GET'});
+})
+
+server.post('/',auth,(req,res)=>{
+        res.json({type:'POST'});
+})
+
+server.put('/',(req,res)=>{
+        res.json({type:'PUT'});
+})
+
+server.delete('/',(req,res)=>{
+        res.json({type:'DELTE'});
+})
+
+server.patch('/',(req,res)=>{
+        res.json({type:'PATCH'});
+})
+
+
+
+// server.get('/',(req,res)=>{
+//         // res.send('<h1>hello</h1>')
+//         // res.json(products)
+// })
+
+server.listen(8080,()=>{
+        console.log('server start');
+})
